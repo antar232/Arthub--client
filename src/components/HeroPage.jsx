@@ -33,7 +33,7 @@ const HeroPage = () => {
     }, []);
 
     return (
-        <div className={`relative w-full h-[80vh] bg-cover bg-center transition-all duration-700 ${slides[current].bg}`}>
+        <div className={`relative w-full h-[80vh]  bg-cover bg-center container mx-auto transition-all duration-700 ${slides[current].bg}`}>
             {/* Overlay */}
             <div className="absolute inset-0 bg-black/50" />
 
