@@ -28,27 +28,31 @@ const SignUpPage = () => {
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const user = Object.fromEntries(formData.entries());
+    const data = Object.fromEntries(formData.entries());
 
-    // Password validation logic
-    if (user.password !== user.confirmPassword) {
+    // পাসওয়ার্ড মিলছে কি না চেক
+    if (data.password !== data.confirmPassword) {
       setServerError("Passwords do not match");
       setIsLoading(false);
       return;
     }
 
     try {
-      const { data, error } = await authClient.signUp.email({
-        email: user.email,
-        password: user.password,
-        name: user.name,
-        role: role, 
+      const result = await authClient.signUp.email({
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        image: data.image, // এটি আগে মিসিং ছিল
+        role: role,
       });
 
-      if (data) router.push("/login");
-      if (error) setServerError(error.message || "Registration failed.");
+      if (result.error) {
+        setServerError(result.error.message || "Registration failed.");
+      } else {
+        router.push("/login");
+      }
     } catch (err) {
-      setServerError("Something went wrong.");
+      setServerError("Something went wrong. Please check your network.");
     } finally {
       setIsLoading(false);
     }
@@ -57,62 +61,79 @@ const SignUpPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4 py-8">
       <div className="flex w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
-        
         {/* Left Side - Artwork Image */}
         <div className="hidden md:flex md:w-5/12 bg-black p-12 flex-col justify-center text-white relative">
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=1000')] bg-cover bg-center opacity-80"></div>
           <div className="relative z-10 space-y-4">
-             <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mb-6 text-2xl">🎨</div>
-             <h2 className="text-4xl font-bold">Join ArtHub</h2>
-             <p className="text-gray-200 text-lg">Buy and sell original art, globally.</p>
+            <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mb-6 text-2xl">
+              🎨
+            </div>
+            <h2 className="text-4xl font-bold">Join ArtHub</h2>
+            <p className="text-gray-200 text-lg">
+              Buy and sell original art, globally.
+            </p>
           </div>
         </div>
 
         {/* Right Side - Form */}
         <div className="w-full md:w-7/12 p-8 sm:p-12">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create your account</h1>
-          <p className="text-gray-500 mb-8">Already have an account? <Link href="/login" className="text-orange-600 font-semibold hover:underline">Sign in</Link></p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Create your account
+          </h1>
+          <p className="text-gray-500 mb-8">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="text-orange-600 font-semibold hover:underline"
+            >
+              Sign in
+            </Link>
+          </p>
 
-          <Button variant="bordered" className="w-full mb-6 py-6 font-medium text-gray-700 flex gap-2 rounded-2xl hover:bg-green-400" onClick={() => authClient.signIn.social({ provider: "google" })}>
+          <Button
+            variant="bordered"
+            className="w-full mb-6 py-6 font-medium text-gray-700 flex gap-2 rounded-2xl hover:bg-green-400"
+            onClick={() => authClient.signIn.social({ provider: "google" })}
+          >
             <FcGoogle size={20} /> Continue with Google
           </Button>
 
           <Form onSubmit={onSubmit} className="flex flex-col gap-5 w-full">
             <TextField
-                isRequired
-                name="name"
-                type="text"
-                className="flex flex-col gap-1.5"
-              >
-                <Label className="text-xs font-semibold text-slate-700 dark:text-emerald-300">
-                  Full name
-                </Label>
-                <Input
-                  placeholder="Rahim Sarkar"
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-emerald-800 rounded-lg bg-transparent text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-400 text-sm transition-all"
-                />
-              </TextField>
+              isRequired
+              name="name"
+              type="text"
+              className="flex flex-col gap-1.5"
+            >
+              <Label className="text-xs font-semibold text-slate-700 dark:text-emerald-300">
+                Full name
+              </Label>
+              <Input
+                placeholder="Rahim Sarkar"
+                className="w-full px-3 py-2 border border-slate-200 dark:border-emerald-800 rounded-lg bg-transparent text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-400 text-sm transition-all"
+              />
+            </TextField>
             <TextField
-                isRequired
-                name="email"
-                type="email"
-                className="flex flex-col gap-1.5"
-                validate={(value) => {
-                  if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
-                    return "Please enter a valid email address";
-                  }
-                  return null;
-                }}
-              >
-                <Label className="text-xs font-semibold text-slate-700 dark:text-emerald-300">
-                  Email address
-                </Label>
-                <Input
-                  placeholder="rahim@mail.com"
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-emerald-800 rounded-lg bg-transparent text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-400 text-sm transition-all"
-                />
-              </TextField>
-             <TextField
+              isRequired
+              name="email"
+              type="email"
+              className="flex flex-col gap-1.5"
+              validate={(value) => {
+                if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
+                  return "Please enter a valid email address";
+                }
+                return null;
+              }}
+            >
+              <Label className="text-xs font-semibold text-slate-700 dark:text-emerald-300">
+                Email address
+              </Label>
+              <Input
+                placeholder="rahim@mail.com"
+                className="w-full px-3 py-2 border border-slate-200 dark:border-emerald-800 rounded-lg bg-transparent text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-400 text-sm transition-all"
+              />
+            </TextField>
+            <TextField
               name="image"
               type="url"
               className="flex flex-col gap-1.5"
@@ -158,28 +179,67 @@ const SignUpPage = () => {
                 </button>
               </div>
             </TextField>
-
+            <TextField
+              isRequired
+              name="confirmPassword" // এটি অবশ্যই থাকতে হবে
+              label="Confirm Password"
+              type="password"
+              className="flex flex-col gap-1.5"
+            >
+              <Input
+                placeholder="••••••"
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-transparent text-sm"
+              />
+            </TextField>
 
             {/* Role Selection */}
             <div className="space-y-2">
-              <Label className="text-sm font-semibold text-gray-700">I am joining as a...</Label>
+              <Label className="text-sm font-semibold text-gray-700">
+                I am joining as a...
+              </Label>
               <div className="flex gap-4">
-                <label className={`p-4 border rounded-xl cursor-pointer flex-1 transition-all ${role === 'buyer' ? 'border-orange-500 bg-orange-50' : 'border-gray-200'}`}>
-                  <input type="radio" name="role" value="buyer" checked={role === 'buyer'} onChange={() => setRole('buyer')} className="hidden" />
+                <label
+                  className={`p-4 border rounded-xl cursor-pointer flex-1 transition-all ${role === "buyer" ? "border-orange-500 bg-orange-50" : "border-gray-200"}`}
+                >
+                  <input
+                    type="radio"
+                    name="role"
+                    value="buyer"
+                    checked={role === "buyer"}
+                    onChange={() => setRole("buyer")}
+                    className="hidden"
+                  />
                   <span className="font-bold block">Buyer</span>
-                  <p className="text-xs text-gray-500">Discover & collect art</p>
+                  <p className="text-xs text-gray-500">
+                    Discover & collect art
+                  </p>
                 </label>
-                <label className={`p-4 border rounded-xl cursor-pointer flex-1 transition-all ${role === 'artist' ? 'border-orange-500 bg-orange-50' : 'border-gray-200'}`}>
-                  <input type="radio" name="role" value="artist" checked={role === 'artist'} onChange={() => setRole('artist')} className="hidden" />
+                <label
+                  className={`p-4 border rounded-xl cursor-pointer flex-1 transition-all ${role === "artist" ? "border-orange-500 bg-orange-50" : "border-gray-200"}`}
+                >
+                  <input
+                    type="radio"
+                    name="role"
+                    value="artist"
+                    checked={role === "artist"}
+                    onChange={() => setRole("artist")}
+                    className="hidden"
+                  />
                   <span className="font-bold block">Artist</span>
                   <p className="text-xs text-gray-500">Sell your creations</p>
                 </label>
               </div>
             </div>
 
-            {serverError && <p className="text-red-500 text-sm">{serverError}</p>}
+            {serverError && (
+              <p className="text-red-500 text-sm">{serverError}</p>
+            )}
 
-            <Button type="submit" isLoading={isLoading} className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-6 mt-2">
+            <Button
+              type="submit"
+              isLoading={isLoading}
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-6 mt-2"
+            >
               Create Account
             </Button>
           </Form>
