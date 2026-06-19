@@ -30,7 +30,6 @@ export async function DashboardSidebar() {
     { icon: LayoutDashboard, href: "/dashboard/artist", label: "Studio Dashboard" },
     { icon: Palette, href: "/dashboard/artist/artworks", label: "Manage Artworks" },
     { icon: PlusCircle, href: "/dashboard/artist/add", label: "Add Artwork" },
-    { icon: Palette, href: "/dashboard/artist/edit", label: "Edit Artwork" },
     { icon: DollarSign, href: "/dashboard/artist/sales", label: "Sales History" },
     { icon: UserSquare2, href: "/dashboard/artist/profile", label: "Profile Setup" },
   ];

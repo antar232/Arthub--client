@@ -101,6 +101,9 @@ const ArtistAddPage = () => {
               <option value="painting">Painting</option>
               <option value="sculpture">Sculpture</option>
               <option value="digital">Digital Art</option>
+              <option value="digital">Photography</option>
+              <option value="digital">Drawing</option>
+              <option value="digital">Mixed Media</option>
             </select>
           </div>
 

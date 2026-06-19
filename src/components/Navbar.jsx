@@ -1,113 +1,171 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import CustomNavLink from "./CustomNavLink";
-import { authClient } from "@/lib/auth-client";
+import { usePathname } from "next/navigation";
+import { Button } from "@heroui/react";
+import { useSession, signOut } from "@/lib/auth-client";
 
-const Navbar = () => {
-  const { data: session, isPending } = authClient.useSession();
+export default function Navbar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { data: session } = useSession();
+  const pathname = usePathname();
+
   const user = session?.user;
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const router = useRouter();
 
-  const getInitials = (name) => {
-    if (!name) return "U";
-    return name.charAt(0).toUpperCase();
+  const handleSignOut = async () => {
+    await signOut();
   };
 
-  const handleLogout = async () => {
-    await authClient.signOut();
-    setIsProfileOpen(false);
-    router.push("/login");
+  const baseLinks = [
+    { label: "Home", href: "/" },
+    { label: "Browse Artworks", href: "/browse" },
+  ];
+
+  const dashboardLinks = {
+    buyer: "/dashboard/buyer",
+    artist: "/dashboard/artist",
+    admin: "/dashboard/admin",
   };
+
+  const userRole = user?.role || "buyer";
+  const dashboardHref = dashboardLinks[userRole] || "/dashboard/buyer";
+
+  const finalNavLinks = [
+    ...baseLinks,
+    ...(user?.email ? [{ label: "Dashboard", href: dashboardHref }] : []),
+  ];
 
   return (
-   
-    <nav className="flex items-center justify-between px-10 py-4 bg-[#1f2533] border-b border-[#30384a] shadow-lg sticky top-0 z-50">
+    <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#0B0B0F]/80 backdrop-blur-xl">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
+        {/* LOGO */}
+        <Link href="/" className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-500 shadow-lg">
+            <span className="text-xl font-bold text-white font-serif">A</span>
+          </div>
+          <div className="hidden leading-none sm:block">
+            <h1 className="text-lg font-bold text-white tracking-tight">
+              Art<span className="text-violet-400 italic font-normal">Hub</span>
+            </h1>
+          </div>
+        </Link>
 
-      {/* Logo */}
-      <div className="flex items-center gap-2">
-        <div className="bg-[#f1974d] p-2 rounded-lg text-white font-bold">🎨</div>
-        <span className="text-2xl font-bold text-white tracking-tight">ArtHub</span>
-      </div>
+        {/* RIGHT SIDE (Desktop Menu & Auth) */}
+        <div className="flex items-center gap-4">
+          <div className="hidden items-center gap-6 md:flex">
+            <ul className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-2">
+              {finalNavLinks.map((link, index) => {
+                const isActive = pathname === link.href;
+                return (
+                  <li key={`${link.label}-${index}`}>
+                    <Link
+                      href={link.href}
+                      className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                        isActive
+                          ? "bg-white/10 text-white"
+                          : "text-gray-400 hover:bg-white/5 hover:text-white"
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
 
-      {/* Nav Links */}
-      <div className="flex gap-8 text-lg font-medium text-[#f5f7fc]">
-        <CustomNavLink to="/">Home</CustomNavLink>
-        <CustomNavLink to="/browse">Browse Artworks</CustomNavLink>
-        {user && <CustomNavLink to="/dashboard">Dashboard</CustomNavLink>}
-      </div>
+            <div className="h-6 w-px bg-white/20" />
 
-      {/* Auth / Profile */}
-      <div className="flex items-center gap-4">
-        {isPending ? (
-          <div className="text-[#a4aabe]">Loading...</div>
-        ) : user ? (
-          <div className="relative flex items-center gap-3">
-            {/* Name */}
-            <button
-              onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-1 font-semibold text-white hover:text-[#f1974d] transition-colors"
-            >
-              {user.name}
-              <svg
-                className={`w-4 h-4 transition-transform ${isProfileOpen ? "rotate-180" : ""}`}
-                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            {/* Avatar */}
-            <button
-              onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="w-10 h-10 rounded-full bg-[#f1974d] text-white flex items-center justify-center font-bold overflow-hidden border-2 border-[#2b3140]"
-            >
-              {user.image ? (
-                <img src={user.image} alt="User" className="w-10 h-10 object-cover" />
+            <div className="flex items-center gap-4">
+              {user ? (
+                <>
+                  <span className="text-sm font-medium text-gray-300">
+                    Hi, {user.name}!
+                  </span>
+                  <Button
+                    onClick={handleSignOut}
+                    variant="ghost"
+                    className="text-white border-white/20 hover:bg-white/10"
+                  >
+                    Sign Out
+                  </Button>
+                </>
               ) : (
-                getInitials(user.name)
+                <>
+                  <Link
+                    href="/login"
+                    className="text-sm font-medium text-violet-400 transition hover:text-violet-300"
+                  >
+                    Sign In
+                  </Link>
+                  {/* বাটনটি ঠিক এভাবে লিখুন */}
+                  <Link
+                    href="/signup"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="w-full flex items-center justify-center h-10 bg-white text-black font-semibold rounded-full hover:bg-gray-200 transition-colors"
+                  >
+                    Get Started
+                  </Link>
+                </>
               )}
-            </button>
+            </div>
+          </div>
 
-            {/* Dropdown */}
-            {isProfileOpen && (
-              <div className="absolute right-0 top-14 bg-[#2b313d] shadow-2xl border border-[#30384a] p-2 rounded-xl w-48 z-50">
+          {/* MOBILE MENU BUTTON */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="p-2 text-white md:hidden"
+          >
+            {isMenuOpen ? "✕" : "☰"}
+          </button>
+        </div>
+      </div>
+
+      {/* MOBILE MENU */}
+      {isMenuOpen && (
+        <div className="border-t border-white/10 bg-[#0B0B0F] p-6 md:hidden space-y-4">
+          {finalNavLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setIsMenuOpen(false)}
+              className="block text-gray-300 hover:text-white py-2"
+            >
+              {link.label}
+            </Link>
+          ))}
+          <div className="border-t border-white/10 pt-4 flex flex-col gap-3">
+            {user ? (
+              <Button
+                onClick={() => {
+                  handleSignOut();
+                  setIsMenuOpen(false);
+                }}
+                className="w-full bg-white/10 text-white"
+              >
+                Sign Out
+              </Button>
+            ) : (
+              <>
                 <Link
-                  href="/dashboard"
-                  onClick={() => setIsProfileOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-[#e2e8f0] hover:bg-[#383f51] rounded-lg font-medium transition"
+                  href="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-center text-violet-400 py-2"
                 >
-                  Dashboard
+                  Sign In
                 </Link>
-                <div className="border-t border-[#30384a] my-1"></div>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 px-3 py-2 text-red-300 w-full text-left font-medium hover:bg-[#3d2121] rounded-lg transition"
+                <Link
+                  href="/signup"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full flex items-center justify-center h-10 bg-white text-black font-semibold rounded-full hover:bg-gray-200 transition-colors"
                 >
-                  Log out
-                </button>
-              </div>
+                  Get Started
+                </Link>
+              </>
             )}
           </div>
-        ) : (
-          <div className="flex gap-4">
-            <Link href="/login" className="text-[#a4aabe] hover:text-white transition font-medium">
-              Log in
-            </Link>
-            <Link
-              href="/signup"
-              className="bg-[#f1974d] text-white px-5 py-2 rounded-xl font-semibold hover:bg-[#e08940] transition shadow-md"
-            >
-              Get Started
-            </Link>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </nav>
   );
-};
-
-export default Navbar;
+}
