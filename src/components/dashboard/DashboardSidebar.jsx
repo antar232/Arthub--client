@@ -47,7 +47,7 @@ export async function DashboardSidebar() {
     },
     {
       icon: Palette,
-      href: "/dashboard/artist/manage",
+      href: "/dashboard/artist/artworks",
       label: "Manage Artworks",
     },
     { icon: PlusCircle, href: "/dashboard/artist/add", label: "Add Artwork" },
