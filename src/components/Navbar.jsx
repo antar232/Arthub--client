@@ -24,7 +24,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="flex items-center justify-between container mx-auto rounded-2xl px-10 py-4 bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
+    <nav className="flex items-center justify-between rounded-2xl px-10 py-4 bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
       {/* Logo */}
       <div className="flex items-center gap-2">
         <div className="bg-orange-500 p-2 rounded text-white">🎨</div>

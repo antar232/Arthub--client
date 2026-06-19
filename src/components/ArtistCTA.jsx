@@ -2,7 +2,7 @@ import React from 'react';
 
 const ArtistCTA = () => {
   return (
-    <section className="bg-[#E67E67] py-16 px-4 text-center container mx-auto rounded-2xl mt-12 text-white">
+    <section className="bg-[#E67E67] py-16 px-4 text-center rounded-2xl mt-12 text-white">
       <div className="max-w-2xl mx-auto">
         <h2 className="text-4xl font-bold mb-4">Are You an Artist?</h2>
         <p className="text-lg mb-8 opacity-90">
