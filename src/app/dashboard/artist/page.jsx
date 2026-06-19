@@ -74,7 +74,7 @@ const ArtistDashboard = () => {
   ];
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-7xl mx-auto text-white-600 p-4">
+    <div className="flex flex-col gap-8 w-full max-w-7xl mx-auto text-white-600 p-4 bg-gray-600">
       {/* Header Section */}
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">Artist Dashboard</h1>
