@@ -54,63 +54,53 @@ const ArtWorksPage = () => {
         {artworks.map((art) => (
           <div
             key={art._id}
-            className="bg-[#1f2533] rounded-2xl overflow-hidden group transition-all duration-300 shadow-xl flex flex-col hover:shadow-orange-950/30"
+            className="bg-[#1f2533] rounded-2xl overflow-hidden transition-all duration-300 shadow-xl flex flex-col hover:shadow-orange-950/30 border border-transparent hover:border-orange-900/50"
           >
-            {/* Image section */}
-            <div className="h-56 w-full bg-[#181d29] flex items-center justify-center overflow-hidden">
-              {art.imageUrl ? (
-                <img
-                  src={`http://localhost:5000${art.imageUrl}`}
-                  alt={art.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              ) : (
-                <span className="text-[#687087]">No Image</span>
-              )}
-            </div>
-
-            {/* Content section */}
-            <div className="p-6 flex-grow">
-              <h2 className="text-2xl font-semibold mb-1 text-white tracking-tight truncate">
-                {art.title}
-              </h2>
-
-              {/* Artist Name with Orange accent */}
-              <div className="flex items-center gap-2 text-sm text-[#f1974d] mb-4">
-                <User size={15} />
-                <span className="font-medium">
-                  {art.artistName || "Unknown Artist"}
-                </span>
+          
+              {/* Image section */}
+              <div className="h-56 w-full bg-[#181d29] flex items-center justify-center overflow-hidden">
+                {art.imageUrl ? (
+                  <img
+                    src={`http://localhost:5000${art.imageUrl}`}
+                    alt={art.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <span className="text-[#687087]">No Image</span>
+                )}
               </div>
 
-              {/* Description */}
-              <p className="text-[#a4aabe] text-sm mb-5 leading-relaxed line-clamp-3">
-                {art.description ||
-                  "No description provided. Add one to help buyers understand your work."}
-              </p>
-
-              <div className="flex items-center justify-between gap-4 mt-auto">
-                <span className="flex items-center gap-1 text-xl font-semibold text-white">
-                  <DollarSign size={18} />
-                  {art.price}
-                </span>
-
-                {/* Category badge with orange text */}
-                <span className="flex items-center gap-1.5 bg-[#2b3140] text-[#f1974d] px-3.5 py-1.5 rounded-full text-xs font-medium capitalize">
-                  <Tag size={13} />
-                  {art.category}
-                </span>
+              {/* Content section */}
+              <div className="p-6">
+                <h2 className="text-2xl font-semibold mb-1 text-white tracking-tight truncate">
+                  {art.title}
+                </h2>
+                <div className="flex items-center gap-2 text-sm text-[#f1974d] mb-4">
+                  <User size={15} />
+                  <span className="font-medium">{art.artistName || "Unknown Artist"}</span>
+                </div>
+                <p className="text-[#a4aabe] text-sm mb-5 leading-relaxed line-clamp-3">
+                  {art.description || "No description provided."}
+                </p>
+                <div className="flex items-center justify-between gap-4 mt-auto">
+                  <span className="flex items-center gap-1 text-xl font-semibold text-white">
+                    <DollarSign size={18} />
+                    {art.price}
+                  </span>
+                  <span className="flex items-center gap-1.5 bg-[#2b3140] text-[#f1974d] px-3.5 py-1.5 rounded-full text-xs font-medium capitalize">
+                    <Tag size={13} />
+                    {art.category}
+                  </span>
+                </div>
               </div>
-            </div>
 
-            {/* Buttons section */}
-            <div className="px-6 pb-6 pt-0 flex gap-4 mt-auto">
+            {/* Edit/Delete বাটনগুলো Link এর বাইরে রাখা হয়েছে */}
+            <div className="px-6 pb-6 pt-0 flex gap-4">
               <Link
                 href={`/edit-artwork/${art._id}`}
                 className="flex-1 py-3 bg-[#2b3140] rounded-xl hover:bg-[#383f51] flex items-center justify-center gap-2.5 transition-colors text-white font-semibold text-sm"
               >
-                <Edit2 size={16} />
-                Edit
+                <Edit2 size={16} /> Edit
               </Link>
               <button
                 onClick={() => handleDelete(art._id)}

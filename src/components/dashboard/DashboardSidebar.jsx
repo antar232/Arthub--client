@@ -19,10 +19,10 @@ export async function DashboardSidebar() {
   const user = await getUserSession();
 
   const userNavLinks = [
-    { icon: LayoutDashboard, href: "/dashboard/user", label: "Overview" },
-    { icon: History, href: "/dashboard/user/purchase-history", label: "Purchase History" },
-    { icon: Image, href: "/dashboard/user/bought-artworks", label: "Bought Art" },
-    { icon: UserSquare2, href: "/dashboard/user/profile", label: "Profile Setup" },
+    { icon: LayoutDashboard, href: "/dashboard/buyer", label: "Dashboard" },
+    { icon: History, href: "/dashboard/buyer/purchase-history", label: "Purchase History" },
+    { icon: Image, href: "/dashboard/buyer/bought-artworks", label: "Bought Art" },
+    { icon: UserSquare2, href: "/dashboard/buyer/profile", label: "Profile Setup" },
     { icon: Settings, href: "/settings", label: "Settings" },
   ];
 
