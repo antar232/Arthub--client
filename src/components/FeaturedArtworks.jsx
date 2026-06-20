@@ -9,19 +9,26 @@ const FeaturedArtworks = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchArtworks = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/artwork");
-        const data = await res.json();
+  const fetchArtworks = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/artwork");
+      const data = await res.json();
+      
+      console.log("API থেকে প্রাপ্ত ডাটা:", data); // এটি কনসোলে চেক করুন
+
+      if (Array.isArray(data)) {
         setArtworks(data.slice(0, 4));
-      } catch (err) {
-        console.error("Error fetching featured artworks:", err);
-      } finally {
-        setLoading(false);
+      } else {
+        console.error("ডেটা অ্যারে ফরম্যাটে নেই:", data);
       }
-    };
-    fetchArtworks();
-  }, []);
+    } catch (err) {
+      console.error("Error fetching featured artworks:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchArtworks();
+}, []);
 
   if (loading) {
     return (

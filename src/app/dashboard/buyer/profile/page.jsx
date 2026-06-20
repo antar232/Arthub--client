@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useSession, updateUser, changePassword } from "@/lib/auth-client"; 
+import { useSession, updateUser, changePassword } from "@/lib/auth-client";
 import { User, Mail, Lock, Loader2, Save } from "lucide-react";
 
 const ProfilePage = () => {
@@ -14,12 +14,46 @@ const ProfilePage = () => {
 
   // প্রোফাইল আপডেট করার ফাংশন
   const handleUpdateProfile = async () => {
-    setLoading(true);
-    await updateUser({ name, email });
-    setLoading(false);
-    alert("Profile updated successfully!");
-  };
+    // ১. সেশন আইডি চেক করুন
+    if (!session?.user?.id) {
+      console.error("Session User ID is missing!", session);
+      alert("Session expired. Please log in again.");
+      return;
+    }
 
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/user/update/${session.user.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name, // স্টেট থেকে নাম
+            email: email, // স্টেট থেকে ইমেইল
+            oldName: session.user.name, // সেশন থেকে পুরনো নাম
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Profile updated successfully!");
+        window.location.reload();
+      } else {
+        // যদি সার্ভার "User not found" দেয়, তবে কনসোলে আইডিটি দেখুন
+        console.error("Server responded with error:", data.message);
+        console.log("Sending ID:", session.user.id);
+        alert(data.message || "Failed to update profile.");
+      }
+    } catch (err) {
+      console.error("Fetch error:", err);
+      alert("Connection error!");
+    } finally {
+      setLoading(false);
+    }
+  };
   // পাসওয়ার্ড পরিবর্তনের ফাংশন
   const handleChangePassword = async () => {
     setLoading(true);
@@ -28,7 +62,12 @@ const ProfilePage = () => {
     alert("Password changed successfully!");
   };
 
-  if (isPending) return <div className="flex justify-center items-center h-screen"><Loader2 className="animate-spin size-10" /></div>;
+  if (isPending)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="animate-spin size-10" />
+      </div>
+    );
 
   return (
     <div className="max-w-4xl mx-auto p-8 bg-neutral-900 min-h-screen text-white">
@@ -41,16 +80,28 @@ const ProfilePage = () => {
             <User className="size-5" /> Personal Details
           </h2>
           <div className="space-y-4">
-            <input 
-              value={name} onChange={(e) => setName(e.target.value)}
-              className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-lg" placeholder="Full Name"
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-lg"
+              placeholder="Full Name"
             />
-            <input 
-              value={email} onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-lg" placeholder="Email"
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-lg"
+              placeholder="Email"
             />
-            <button onClick={handleUpdateProfile} className="w-full flex items-center justify-center gap-2 bg-white text-black py-3 rounded-lg font-bold">
-              {loading ? <Loader2 className="animate-spin size-5" /> : <Save className="size-5" />} Save Changes
+            <button
+              onClick={handleUpdateProfile}
+              className="w-full flex items-center justify-center gap-2 bg-white text-black py-3 rounded-lg font-bold"
+            >
+              {loading ? (
+                <Loader2 className="animate-spin size-5" />
+              ) : (
+                <Save className="size-5" />
+              )}{" "}
+              Save Changes
             </button>
           </div>
         </div>
@@ -61,15 +112,22 @@ const ProfilePage = () => {
             <Lock className="size-5" /> Security
           </h2>
           <div className="space-y-4">
-            <input 
-              type="password" onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-lg" placeholder="Current Password"
+            <input
+              type="password"
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-lg"
+              placeholder="Current Password"
             />
-            <input 
-              type="password" onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-lg" placeholder="New Password"
+            <input
+              type="password"
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full p-3 bg-neutral-900 border border-neutral-800 rounded-lg"
+              placeholder="New Password"
             />
-            <button onClick={handleChangePassword} className="w-full bg-neutral-800 text-white py-3 rounded-lg font-bold hover:bg-neutral-700">
+            <button
+              onClick={handleChangePassword}
+              className="w-full bg-neutral-800 text-white py-3 rounded-lg font-bold hover:bg-neutral-700"
+            >
               Update Password
             </button>
           </div>
