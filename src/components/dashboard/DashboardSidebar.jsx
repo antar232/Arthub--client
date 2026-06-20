@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Button, Drawer, DrawerTrigger } from "@heroui/react";
 import { LayoutSideContentLeft } from "@gravity-ui/icons";
+import {CreditCard} from '@gravity-ui/icons';
 import Link from "next/link";
 
 export async function DashboardSidebar() {
@@ -23,7 +24,7 @@ export async function DashboardSidebar() {
     { icon: History, href: "/dashboard/buyer/purchase-history", label: "Purchase History" },
     { icon: Image, href: "/dashboard/buyer/bought-artworks", label: "Bought Art" },
     { icon: UserSquare2, href: "/dashboard/buyer/profile", label: "Profile Setup" },
-    { icon: Settings, href: "/settings", label: "Settings" },
+    { icon: CreditCard, href: "/dashboard/buyer/subscription", label: "Subscription" },
   ];
 
   const artistNavLinks = [
